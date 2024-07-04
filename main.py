@@ -1,4 +1,6 @@
 from .vision import vision
 
 if __name__ == '__main__':
-    vision.main()
+    vis = vision.Vision()
+    vis.start()
+    # audio関連も起動

@@ -12,6 +12,8 @@ from sensor_msgs.msg import Image
 from .mymediapipe import MyMediaPipe
 from .yolo import YOLO
 
+from copy import deepcopy
+
 
 class Direction(Enum):
     LEFT_UP = 0
@@ -67,7 +69,8 @@ class Vision:
             rospy.logerr(cv_bridge_exception)
 
     def search_direction_at(self, timestamp: str) -> Direction:
-        return self._search_direction_at(timestamp, self.directs)
+        copyof_directs = deepcopy(self.directs)  # 別スレッドからアクセスされるのでコピーしておく
+        return self._search_direction_at(timestamp, copyof_directs)
 
     def _search_direction_at(
         self,
