@@ -15,7 +15,6 @@ def callback(msg, queue):
 def record_audio():
     rospy.init_node('listener', anonymous=True)
     while True:
-
         start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
         frames = []
@@ -41,6 +40,7 @@ def record_audio():
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
             wf.close()
+        break
 
 if __name__ == "__main__":
     record_audio()

@@ -14,7 +14,6 @@ RECORD_SECONDS = 5
 def record_audio():
     audio = pyaudio.PyAudio()
     while True:
-
         stream = audio.open(format=FORMAT, channels=CHANNELS,
                             rate=RATE, input=True,
                             frames_per_buffer=CHUNK)
