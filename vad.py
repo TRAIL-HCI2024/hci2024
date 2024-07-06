@@ -15,7 +15,7 @@ def vad(file_dir: str):
   while True:
     for filename in os.listdir(file_dir):
       if filename.endswith(".wav"):
-        file_path = os.path.join("data", filename)
+        file_path = os.path.join(file_dir, filename)
         print(file_path)
         wav = read_audio(file_path)
         speech_timestamps = get_speech_timestamps(wav, model, sampling_rate=RATE)
@@ -40,4 +40,4 @@ def vad(file_dir: str):
     time.sleep(1)
 
 if __name__=="__main__":
-    vad("data")
+    vad("data/audio")

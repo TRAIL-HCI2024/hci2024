@@ -2,6 +2,8 @@ import pyaudio
 import wave
 import datetime
 import os
+import rospy
+from audio_common_msgs.msg import AudioData
 
 # 音声設定
 FORMAT = pyaudio.paInt16
@@ -10,24 +12,20 @@ RATE = 16000
 CHUNK = 2048
 RECORD_SECONDS = 5
 
+def callback(msg, queue):
+    queue.append(msg.data)
+
 ###HSRで動くように書き換える
 def record_audio():
-    audio = pyaudio.PyAudio()
-    stream = audio.open(format=FORMAT, channels=CHANNELS,
-                          rate=RATE, input=True,
-                          frames_per_buffer=CHUNK)
+    rospy.init_node('listener', anonymous=True)
     
     while True:
       start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-      print("Recording...")
-
       frames = []
-
-      for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-          data = stream.read(CHUNK)
-          frames.append(data)
-
+      rospy.Subscriber("audio/audio", AudioData, callback, frames)
+      print("start record")
+      rospy.sleep(5)
       print("Finished recording.")
 
       if not os.path.exists("data/audio"):
@@ -38,13 +36,10 @@ def record_audio():
       filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
       # 音声データを保存
-      wf = wave.open(filename, 'wb')
-      wf.setnchannels(CHANNELS)
-      wf.setsampwidth(audio.get_sample_size(FORMAT))
-      wf.setframerate(RATE)
-      wf.writeframes(b''.join(frames))
-      wf.close()
+      file = open(filename, "wb")
+      file.write(b''.join(frames))
+      file.close()
+
 
 if __name__ == "__main__":
     record_audio()
-
