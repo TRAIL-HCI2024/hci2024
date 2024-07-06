@@ -253,5 +253,4 @@ google-generativeai==0.6.0
 google-resumable-media==2.7.0
 googleapis-common-protos==1.63.0
 pydub==0.25.1
-torch==2.2.2
 torchaudio==2.2.2
