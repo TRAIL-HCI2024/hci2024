@@ -1,7 +1,7 @@
 import threading
 from vad import vad
 from recorder_hsr import record_audio as record_audio_hsr
-from recorder import record_audio 
+#from recorder import record_audio 
 from speech_recognizer import whisper
 
 def main():
