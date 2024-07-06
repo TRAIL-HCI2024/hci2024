@@ -13,37 +13,44 @@ RECORD_SECONDS = 5
 ###HSRで動くように書き換える
 def record_audio():
     audio = pyaudio.PyAudio()
-    stream = audio.open(format=FORMAT, channels=CHANNELS,
-                          rate=RATE, input=True,
-                          frames_per_buffer=CHUNK)
-    
     while True:
-      start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-      print("Recording...")
-
-      frames = []
-
-      for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-          data = stream.read(CHUNK)
-          frames.append(data)
-
-      print("Finished recording.")
+        stream = audio.open(format=FORMAT, channels=CHANNELS,
+                            rate=RATE, input=True,
+                            frames_per_buffer=CHUNK)
         
-      if not os.path.exists("data/audio"):
+
+        start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        print("Recording...")
+
+        frames = []
+
+        for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+            data = stream.read(CHUNK)
+            frames.append(data)
+
+        print("Finished recording.")
+        
+        if not os.path.exists("data/audio"):
             os.makedirs("data/audio")
+        
+        for frame in frames:
+            print(frame)
+        print("frames_len: " +  str(len(frames)))
+        print("frame type: " + str(type(frames[1])))
 
-      # ファイル名を現在の日時に基づいて設定
-      end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
-      filename = "data/audio/" + start_time + "-" + end_time + ".wav"
+        # ファイル名を現在の日時に基づいて設定
+        end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
+        filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
-      # 音声データを保存
-      wf = wave.open(filename, 'wb')
-      wf.setnchannels(CHANNELS)
-      wf.setsampwidth(audio.get_sample_size(FORMAT))
-      wf.setframerate(RATE)
-      wf.writeframes(b''.join(frames))
-      wf.close()
+        # 音声データを保存
+        wf = wave.open(filename, 'wb')
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(audio.get_sample_size(FORMAT))
+        wf.setframerate(RATE)
+        wf.writeframes(b''.join(frames))
+        wf.close()
 
 if __name__ == "__main__":
     record_audio()
