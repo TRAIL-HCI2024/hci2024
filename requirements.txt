@@ -237,7 +237,6 @@ urllib3==2.2.2
 xacro==1.14.18
 zipp==3.19.2
 openai==1.1.1
-PyAudio==0.2.14
 google-generativeai
 pydub==0.25.1
 torchaudio==2.2.2

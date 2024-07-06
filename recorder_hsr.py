@@ -1,12 +1,9 @@
-import pyaudio
-import wave
 import datetime
 import os
 import rospy
 from audio_common_msgs.msg import AudioData
 
 # 音声設定
-FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 CHUNK = 2048
