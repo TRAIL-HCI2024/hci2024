@@ -32,8 +32,7 @@ def record_audio():
     filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
     print("frames_len: " +  str(len(frames)))
-    for i in frames:
-        print(i)
+    print("frame type: " + str(type(frames[1])))
 
     # 音声データを保存
     file = open(filename, "wb")
