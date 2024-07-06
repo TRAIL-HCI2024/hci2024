@@ -1,20 +1,4 @@
 #!/usr/bin/env python3
-import predefined_utils
-import rospy
-import utils.robot
-from hsrb_interface import Robot, settings
-from sensor_msgs.msg import Image
-from std_msgs.msg import Empty, String
-from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
-from utils.control.end_effector_wrapper import GripperWrapper
-from utils.control.joint_group_wrapper import JointGroupWrapper
-from utils.control.mobile_base_wrapper import MobileBaseWrapper
-from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
-from std_srvs.srv import Trigger
-from world_functions import GPSRFunctions
-from world_modules import GPSRModules
-import subprocess
-from Detic import GPSRDetection as gpsr_detection
 import sys
 # Replace with the actual path to catkin_ws/src
 sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
@@ -22,12 +6,27 @@ sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
 sys.path.append('/root/HSR/catkin_ws/src/robocup_utils/scripts/')
 
 
+from Detic import GPSRDetection as gpsr_detection
+import subprocess
+from world_modules import GPSRModules
+from world_functions import GPSRFunctions
+from std_srvs.srv import Trigger
+from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
+from utils.control.mobile_base_wrapper import MobileBaseWrapper
+from utils.control.joint_group_wrapper import JointGroupWrapper
+from utils.control.end_effector_wrapper import GripperWrapper
+from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
+from std_msgs.msg import Empty, String
+from sensor_msgs.msg import Image
+from hsrb_interface import Robot, settings
+import utils.robot
+import rospy
+import predefined_utils
 # self.gpsr_detection = gpsr_detection
 
 # from robocup_utils.scripts.Detic import GPSRDetection
 
 # class for task manager
-
 
 class Action:
     # constructor
