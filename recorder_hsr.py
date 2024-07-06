@@ -14,31 +14,31 @@ def callback(msg, queue):
 ###HSRで動くように書き換える
 def record_audio():
     rospy.init_node('listener', anonymous=True)
-    
-    start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    while True:
+        start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    frames = []
-    rospy.Subscriber("audio/audio", AudioData, callback, frames)
-    print("start record")
-    rospy.sleep(5)
-    print("Finished recording.")
+        frames = []
+        rospy.Subscriber("audio/audio", AudioData, callback, frames)
+        print("start record")
+        rospy.sleep(5)
+        print("Finished recording.")
 
-    if not os.path.exists("data/audio"):
-        os.makedirs("data/audio")
+        if not os.path.exists("data/audio"):
+            os.makedirs("data/audio")
 
-    # ファイル名を現在の日時に基づいて設定
-    end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
-    filename = "data/audio/" + start_time + "-" + end_time + ".wav"
+        # ファイル名を現在の日時に基づいて設定
+        end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
+        filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
-    print("frames_len: " +  str(len(frames)))
-    print("frame type: " + str(type(frames[1])))
+        print("frames_len: " +  str(len(frames)))
+        print("frame type: " + str(type(frames[1])))
 
-    # 音声データを保存
-    with wave.open(filename, 'wb') as wf:
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(2)
-        wf.setframerate(RATE)
-        wf.writeframes(b''.join(frames))
+        # 音声データを保存
+        with wave.open(filename, 'wb') as wf:
+            wf.setnchannels(CHANNELS)
+            wf.setsampwidth(2)
+            wf.setframerate(RATE)
+            wf.writeframes(b''.join(frames))
 
 
 if __name__ == "__main__":
