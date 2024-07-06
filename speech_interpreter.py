@@ -1,11 +1,9 @@
-import google.generativeai as genai
+import openai
 import json
 import os
 
 def generate_response(user_input: str) -> str:
-    genai.configure(api_key="AIzaSyCa-r7g4d8co7ftpPVObjUEK-0Hn1rU7ew")
-    model_name = "models/gemini-1.5-flash-latest"
-    model = genai.GenerativeModel(model_name)
+    client = openai.OpenAI(api_key="sk-proj-d5M3eeV1P0wAYBU2eoQpT3BlbkFJkbaBKB2jFv1QRCq3ya9E")
     prompt_hci: str = """"
     文章から以下３つの情報を抽出してください。
 
@@ -73,14 +71,20 @@ def generate_response(user_input: str) -> str:
 
     <入力文>
     """
-    
-    prompt_content = [prompt_hci + user_input]
     try:
-        response = model.generate_content(prompt_content)
-        description = response.text
+      completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+          {"role": "system", "content": prompt_hci},
+          {"role": "user", "content": user_input} 
+        ]
+      )
     except Exception as e:
         raise e
-    return process_order(description)
+    if completion.choices[0].message.content:
+        return process_order(completion.choices[0].message.content)
+    else:
+        return process_order("")
 
 def process_order(json_string: str):
     # JSON文字列を辞書に変換
@@ -95,4 +99,4 @@ def process_order(json_string: str):
 
 
 if __name__=="__main__":
-    generate_response("あっちからりんご取ってきて")
+    print(generate_response("あっちからりんご取ってきて"))
