@@ -33,11 +33,6 @@ def record_audio():
         
         if not os.path.exists("data/audio"):
             os.makedirs("data/audio")
-        
-        for frame in frames:
-            print(frame)
-        print("frames_len: " +  str(len(frames)))
-        print("frame type: " + str(type(frames[1])))
 
         # ファイル名を現在の日時に基づいて設定
         end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
