@@ -39,6 +39,7 @@ def record_audio():
             wf.setsampwidth(2)
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
+            wf.close()
 
 
 if __name__ == "__main__":
