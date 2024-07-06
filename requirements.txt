@@ -239,4 +239,3 @@ zipp==3.19.2
 openai==1.1.1
 google-generativeai
 pydub==0.25.1
-torchaudio==2.2.2
