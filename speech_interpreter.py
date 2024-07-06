@@ -3,7 +3,8 @@ import json
 import os
 
 def generate_response(user_input: str) -> str:
-    client = openai.OpenAI(api_key="sk-proj-d5M3eeV1P0wAYBU2eoQpT3BlbkFJkbaBKB2jFv1QRCq3ya9E")
+    OPEN_API_KEY = os.environ.get("OPENAI_API_KEY")
+    client = openai.OpenAI(api_key=OPEN_API_KEY)
     prompt_hci: str = """"
     文章から以下３つの情報を抽出してください。
 

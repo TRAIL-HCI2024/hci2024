@@ -10,7 +10,8 @@ UPLOAD_FOLDER = "uploads/audio"
 
 
 def whisper_make_transcription(filename: str) -> str:
-    client = openai.OpenAI(api_key="sk-proj-d5M3eeV1P0wAYBU2eoQpT3BlbkFJkbaBKB2jFv1QRCq3ya9E")
+    OPEN_API_KEY = os.environ.get("OPENAI_API_KEY")
+    client = openai.OpenAI(api_key=OPEN_API_KEY)
 
     try:
         with open(filename, "rb") as audio_file:
@@ -27,7 +28,7 @@ def whisper(file_dir):
                 print(file_path)
                 transcription = whisper_make_transcription(file_path)
                 print(generate_response(transcription))
-                
+
                 os.remove(file_path)
         time.sleep(1)
 
