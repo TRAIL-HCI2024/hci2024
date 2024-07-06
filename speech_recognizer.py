@@ -1,6 +1,8 @@
 import os
 
 import openai 
+import time
+from speech_interpreter import generate_response
 
 WHISPER_MODEL_NAME = "small"
 WHISPER_DEVICE = "cpu"
@@ -16,6 +18,18 @@ def whisper_make_transcription(filename: str) -> str:
         return transcript.text
     except Exception as e:
         raise e
+    
+def whisper(file_dir):
+    while True:
+        for filename in os.listdir(file_dir):
+            if filename.endswith(".wav"):
+                file_path = os.path.join(file_dir, filename)
+                print(file_path)
+                transcription = whisper_make_transcription(file_path)
+                print(generate_response(transcription))
+                
+                os.remove(file_path)
+        time.sleep(1)
 
 if __name__=="__main__":
     with open("こんにちは.wav", "rb") as audio_file:
