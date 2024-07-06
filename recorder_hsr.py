@@ -30,9 +30,6 @@ def record_audio():
         end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
         filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
-        print("frames_len: " +  str(len(frames)))
-        print("frame type: " + str(type(frames[1])))
-
         # 音声データを保存
         with wave.open(filename, 'wb') as wf:
             wf.setnchannels(CHANNELS)
