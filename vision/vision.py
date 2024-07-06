@@ -89,7 +89,7 @@ class Vision:
         return len(boxes) > 0
 
     def _estimate_pose(self) -> Union[Tuple[Position, Position], None]:
-        return self.mmp.estimate_right_arm()
+        return self.mmp.estimate_right_arm(self.get_image())
 
     def extimate_pose(self) -> Direction:
         """
