@@ -1,7 +1,7 @@
 import cv2
 from cv2.typing import MatLike
 from typing import Tuple, Union
-from .typing import Position
+from .typing import Position, Bone
 
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -32,12 +32,8 @@ class MyMediaPipe:
             return None
 
         # Extract the landmarks of the right shoulder and right wrist.
-        right_shoulder = results.pose_landmarks.landmark[
-            mp.PoseLandmark.RIGHT_SHOULDER
-        ]
-        right_wrist = results.pose_landmarks.landmark[
-            mp.PoseLandmark.RIGHT_WRIST
-        ]
+        right_shoulder = results.pose_landmarks[Bone.RIGHT_SHOULDER]
+        right_wrist = results.pose_landmarks[Bone.RIGHT_WRIST]
 
         # Calculate the 3D coordinates of the right shoulder and right wrist.
         right_shoulder_x = right_shoulder.x * image.shape[1]

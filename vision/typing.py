@@ -15,3 +15,9 @@ class Position:
     x: float
     y: float
     z: float
+
+
+class Bone(Enum):
+    RIGHT_SHOULDER = 12
+    RIGHT_ELBOW = 14
+    RIGHT_WRIST = 16
