@@ -40,7 +40,6 @@ def record_audio():
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
             wf.close()
-        break
 
 if __name__ == "__main__":
     record_audio()
