@@ -31,7 +31,7 @@ def record_audio():
     end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
     filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
-    print("frames_len: " +  len(frames))
+    print("frames_len: " +  str(len(frames)))
     for i in frames:
         print(i)
 
