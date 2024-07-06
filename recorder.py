@@ -29,7 +29,7 @@ def record_audio():
           frames.append(data)
 
       print("Finished recording.")
-
+        
       if not os.path.exists("data/audio"):
             os.makedirs("data/audio")
 

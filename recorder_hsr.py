@@ -1,13 +1,12 @@
 import datetime
 import os
+import wave
 import rospy
 from audio_common_msgs.msg import AudioData
 
 # 音声設定
 CHANNELS = 1
 RATE = 16000
-CHUNK = 2048
-RECORD_SECONDS = 5
 
 def callback(msg, queue):
     queue.append(msg.data)
@@ -35,9 +34,11 @@ def record_audio():
     print("frame type: " + str(type(frames[1])))
 
     # 音声データを保存
-    file = open(filename, "wb")
-    file.write(b''.join(frames))
-    file.close()
+    with wave.open(filename, 'wb') as wf:
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(2)
+        wf.setframerate(RATE)
+        wf.writeframes(b''.join(frames))
 
 
 if __name__ == "__main__":
