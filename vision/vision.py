@@ -1,8 +1,10 @@
 import datetime
 import threading
+from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Tuple, Union
+from .typing import Direction, Position
 
 import cv2
 import rospy
@@ -11,23 +13,6 @@ from sensor_msgs.msg import Image
 
 from .mymediapipe import MyMediaPipe
 from .yolo import YOLO
-
-from copy import deepcopy
-
-
-class Direction(Enum):
-    LEFT_UP = 0
-    LEFT_DOWN = 1
-    RIGHT_UP = 2
-    RIGHT_DOWN = 3
-    NONE = -1
-
-
-@dataclass
-class Position:
-    x: float
-    y: float
-    z: float
 
 
 class Vision:
@@ -99,6 +84,8 @@ class Vision:
         image = self.get_image()
         boxes = self.yolo._detect(image)
         boxes = boxes[boxes['name'] == "person"]
+        if len(boxes) > 0:
+            print("Person detected")
         return len(boxes) > 0
 
     def _estimate_pose(self) -> Union[Tuple[Position, Position], None]:
