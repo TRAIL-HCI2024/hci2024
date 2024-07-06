@@ -32,8 +32,8 @@ class MyMediaPipe:
             return None
 
         # Extract the landmarks of the right shoulder and right wrist.
-        right_shoulder = results.pose_landmarks[Bone.RIGHT_SHOULDER]
-        right_wrist = results.pose_landmarks[Bone.RIGHT_WRIST]
+        right_shoulder = results.pose_landmarks[int(Bone.RIGHT_SHOULDER)]
+        right_wrist = results.pose_landmarks[int(Bone.RIGHT_WRIST)]
 
         # Calculate the 3D coordinates of the right shoulder and right wrist.
         right_shoulder_x = right_shoulder.x * image.shape[1]
