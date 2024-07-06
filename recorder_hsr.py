@@ -16,26 +16,29 @@ def callback(msg, queue):
 def record_audio():
     rospy.init_node('listener', anonymous=True)
     
-    while True:
-      start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-      frames = []
-      rospy.Subscriber("audio/audio", AudioData, callback, frames)
-      print("start record")
-      rospy.sleep(5)
-      print("Finished recording.")
+    frames = []
+    rospy.Subscriber("audio/audio", AudioData, callback, frames)
+    print("start record")
+    rospy.sleep(5)
+    print("Finished recording.")
 
-      if not os.path.exists("data/audio"):
-            os.makedirs("data/audio")
+    if not os.path.exists("data/audio"):
+        os.makedirs("data/audio")
 
-      # ファイル名を現在の日時に基づいて設定
-      end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
-      filename = "data/audio/" + start_time + "-" + end_time + ".wav"
+    # ファイル名を現在の日時に基づいて設定
+    end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
+    filename = "data/audio/" + start_time + "-" + end_time + ".wav"
 
-      # 音声データを保存
-      file = open(filename, "wb")
-      file.write(b''.join(frames))
-      file.close()
+    print("frames_len: " +  len(frames))
+    for i in frames:
+        print(i)
+
+    # 音声データを保存
+    file = open(filename, "wb")
+    file.write(b''.join(frames))
+    file.close()
 
 
 if __name__ == "__main__":
