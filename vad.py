@@ -9,6 +9,7 @@ torch.set_num_threads(1)
 RATE = 16000
 
 def vad(file_dir: str):
+  torch.hub.download_url_to_file('https://models.silero.ai/vad_models/en.wav', 'en_example.wav')
   model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', model='silero_vad')
   (get_speech_timestamps, _, read_audio, _, _) = utils
 
