@@ -9,7 +9,7 @@ def main():
     vad_thread = threading.Thread(target=whisper, args=(file_dir,))
     vad_thread.start()
 
-    record_audio()
+    record_audio_hsr()
     vad_thread.join()
 
 if __name__ == "__main__":
