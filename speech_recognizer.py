@@ -25,6 +25,8 @@ def whisper_make_transcription(filename: str) -> str:
     
 def whisper(file_dir: str, action: Action):
     flag = 0
+    if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
     while True:
         for filename in os.listdir(file_dir):
             if filename.endswith(".wav"):
