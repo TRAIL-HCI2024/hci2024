@@ -21,7 +21,7 @@ from world_modules import GPSRModules
 import subprocess
 from Detic import GPSRDetection as gpsr_detection
 from enum import Enum
-from ..vision.typing import Direction
+from vision.typing import Direction
 
 
 # self.gpsr_detection = gpsr_detection
