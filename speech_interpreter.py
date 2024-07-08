@@ -2,14 +2,14 @@ import openai
 import json
 import os
 
-def generate_response(user_input: str) -> str:
+def generate_response(user_input: str):
     OPEN_API_KEY = os.environ.get("OPENAI_API_KEY")
     client = openai.OpenAI(api_key=OPEN_API_KEY)
     prompt_hci: str = """"
     文章から以下３つの情報を抽出してください。
 
     ・「こっち」「あっち」といった指示語や、「オレンジ」や「みかん」といった対象のオブジェクト名、「取ってきて」といったレトリーバルに関係した否定形でない命令の３つが入力に含まれているかのbool値(isOrder)
-    ・対象のオブジェクト名のstring(object)
+    ・対象のオブジェクト名（英語）のstring(object)
     ・「了解しました!取ってきます!」のようなユーザーへの返答のstring(response)
     以下の点に注意してください。
     ・出力はjson形式で１つお願いします。
@@ -23,12 +23,12 @@ def generate_response(user_input: str) -> str:
 
     例：
     入力
-    「あっちからみかん取ってきて」
+    「あっちからオレンジ取ってきて」
 
     出力
     {
       "isOrder": true,
-      "object": "みかん",
+      "object": "orange",
       "response": "了解しました!取ってきます!"
     }
     入力
@@ -41,12 +41,12 @@ def generate_response(user_input: str) -> str:
       "response": ""
     }
     入力
-    「こっちにオレンジ持ってきて」
+    「こっちにバナナ持ってきて」
 
     出力
     {
       "isOrder": true,
-      "object": "オレンジ",
+      "object": "banana",
       "response": "もちろんです!任せて下さい!"
     }
 
@@ -56,7 +56,7 @@ def generate_response(user_input: str) -> str:
     出力
     {
       "isOrder": true,
-      "object": "りんご",
+      "object": "apple",
       "response": "わあい！いいよ！"
     }
 

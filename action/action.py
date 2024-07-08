@@ -21,14 +21,7 @@ from world_modules import GPSRModules
 import subprocess
 from Detic import GPSRDetection as gpsr_detection
 from enum import Enum
-
-
-class Direction(Enum):
-    LEFT_UP = 0
-    LEFT_DOWN = 1
-    RIGHT_UP = 2
-    RIGHT_DOWN = 3
-    NONE = -1
+from ..vision.typing import Direction
 
 
 # self.gpsr_detection = gpsr_detection
