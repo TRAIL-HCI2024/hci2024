@@ -14,7 +14,7 @@ def callback(msg, queue):
 ###HSRで動くように書き換える
 def record_audio():
     print("recording...")
-    rospy.init_node('listener', anonymous=True)
+    #rospy.init_node('listener', anonymous=True)
     while True:
         start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
