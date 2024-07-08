@@ -39,7 +39,7 @@ class Action:
         Args: none
         Returns: none
         """
-        rospy.init_node('my_action', anonymous=True)
+        #rospy.init_node('my_action', anonymous=True)
 
         # Connect to Robot
         rospy.loginfo("Connecting to robot ..")
