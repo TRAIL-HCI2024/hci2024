@@ -1,32 +1,42 @@
 #!/usr/bin/env python3
-import sys
 # Replace with the actual path to catkin_ws/src
+import sys
 sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
 # Replace with the actual path to catkin_ws/src
 sys.path.append('/root/HSR/catkin_ws/src/robocup_utils/scripts/')
-
-
-from Detic import GPSRDetection as gpsr_detection
-import subprocess
-from world_modules import GPSRModules
-from world_functions import GPSRFunctions
-from std_srvs.srv import Trigger
-from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
-from utils.control.mobile_base_wrapper import MobileBaseWrapper
-from utils.control.joint_group_wrapper import JointGroupWrapper
-from utils.control.end_effector_wrapper import GripperWrapper
-from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
-from std_msgs.msg import Empty, String
-from sensor_msgs.msg import Image
-from hsrb_interface import Robot, settings
-import utils.robot
-import rospy
 import predefined_utils
+import rospy
+import robocup_utils.robot
+from hsrb_interface import Robot, settings
+from sensor_msgs.msg import Image
+from std_msgs.msg import Empty, String
+from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
+from gpsr_utils.control.end_effector_wrapper import GripperWrapper
+from gpsr_utils.control.joint_group_wrapper import JointGroupWrapper
+from gpsr_utils.control.mobile_base_wrapper import MobileBaseWrapper
+from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
+from std_srvs.srv import Trigger
+from world_functions import GPSRFunctions
+from world_modules import GPSRModules
+import subprocess
+from Detic import GPSRDetection as gpsr_detection
+from enum import Enum
+
+
+class Direction(Enum):
+    LEFT_UP = 0
+    LEFT_DOWN = 1
+    RIGHT_UP = 2
+    RIGHT_DOWN = 3
+    NONE = -1
+
+
 # self.gpsr_detection = gpsr_detection
 
 # from robocup_utils.scripts.Detic import GPSRDetection
 
 # class for task manager
+
 
 class Action:
     # constructor
@@ -48,7 +58,7 @@ class Action:
         rospy.loginfo("Connecting to robot 3/4")
         gripper = GripperWrapper(robot.get('gripper'))
         rospy.loginfo("Connected")
-        self.robot = utils.robot.Robot(
+        self.robot = robocup_utils.robot.Robot(
             robot, self.omni_base, self.whole_body, gripper)
         self.base_link_id = settings.get_frame('base')
         print("Robot Initialized.")
@@ -75,13 +85,13 @@ class Action:
         # self.monitor_instruction("battery") # str -> bool
         self.robot.whole_body.move_to_neutral()
 
-        self.robot.speak("おはようございます。", wait=True)
-        self.robot.speak("HCI2024", wait=True)
+        #self.robot.speak("おはようございます。", wait=True)
+        #self.robot.speak("HCI2024", wait=True)
 
         # spottingした場所への移動 (optional)
         # location_name = "instruction point"
         # self.gpsr_functions.go_to_location(location_name)
-
+        """
         # 首の角度を変更
         self.gpsr_functions.gpsr_modules.move_joints_with_exception(
             {"head_tilt_joint": -0.6, "head_pan_joint": 0.0})
@@ -95,9 +105,30 @@ class Action:
         )
         # object_nameの物体を掴む
         self.gpsr_functions.pick(object_name, location_name=None)
+        """
+
+    def speak(self, text: str):
+        self.robot.speak(text, wait=True)
+
+    def rotate_head(self, direction: Direction):
+        if direction == Direction.LEFT_DOWN:
+            self.gpsr_functions.gpsr_modules.move_joints_with_exception(
+                {"head_tilt_joint": -0.5, "head_pan_joint": -1.5})
+        elif direction == Direction.LEFT_UP:
+            self.gpsr_functions.gpsr_modules.move_joints_with_exception(
+                {"head_tilt_joint": 0.5, "head_pan_joint": -1.5})
+        elif direction == Direction.RIGHT_UP:
+            self.gpsr_functions.gpsr_modules.move_joints_with_exception(
+                {"head_tilt_joint": 0.5, "head_pan_joint": 1.5})
+        else:
+            self.gpsr_functions.gpsr_modules.move_joints_with_exception(
+                {"head_tilt_joint": -0.5, "head_pan_joint": 1.5})
 
 
 if __name__ == '__main__':
     action = Action()
     action.start()
+    action.speak("Hello")
+    action.rotate_head(Direction.LEFT_UP)
+    action.rotate_head(Direction.RIGHT_DOWN)
     rospy.spin()

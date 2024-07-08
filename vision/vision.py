@@ -76,6 +76,7 @@ class Vision:
                 return self._search_direction_at(timestamp, ls[:median])
             else:
                 return self._search_direction_at(timestamp, ls[median:])
+        return Direction.NONE
 
     def get_image(self):
         return self._input_image
@@ -106,3 +107,11 @@ class Vision:
         shoulder, wrist = _pose
         if shoulder.x > wrist.x and shoulder.y < wrist.y:
             return Direction.LEFT_UP
+        elif shoulder.x < wrist.x and shoulder.y < wrist.y:
+            return Direction.RIGHT_UP
+        elif shoulder.x > wrist.x and shoulder.y > wrist.y:
+            return Direction.LEFT_DOWN
+        elif shoulder.x < wrist.x and shoulder.y > wrist.y:
+            return Direction.RIGHT_DOWN
+        else:
+            return Direction.NONE
