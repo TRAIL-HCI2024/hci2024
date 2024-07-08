@@ -123,6 +123,36 @@ class Action:
         else:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
                 {"head_tilt_joint": -0.5, "head_pan_joint": 1.5})
+    
+    def init_head(self):
+        self.gpsr_functions.gpsr_modules.move_joints_with_exception(
+            {"head_tilt_joint": 0.0, "head_pan_joint": 0.0})
+
+    def rotate_body(self, direction: Direction):
+        try:
+            if direction == Direction.LEFT_DOWN:
+                self.robot.rotate_omni_base(-90, wait=False)
+            elif direction == Direction.LEFT_UP:
+                self.robot.rotate_omni_base(-90, wait=False)
+            elif direction == Direction.RIGHT_UP:
+                self.robot.rotate_omni_base(90, wait=False)
+            else:
+                self.robot.rotate_omni_base(90, wait=False)
+        except Exception as e:
+            print(e)
+    
+    def look(self, direction: Direction):
+        action.rotate_head(direction)
+        action.rotate_body(direction)
+        action.init_head()
+
+    def find_and_pick(self, object_name: str):
+        self.gpsr_functions.find_concrete_name_objects(
+            object_name=object_name,
+            room=None,
+            complement=None
+        )
+        self.gpsr_functions.pick(object_name, location_name=None)
 
 
 if __name__ == '__main__':
@@ -130,5 +160,14 @@ if __name__ == '__main__':
     action.start()
     action.speak("Hello")
     action.rotate_head(Direction.LEFT_UP)
-    action.rotate_head(Direction.RIGHT_DOWN)
+    print("Rotating head: LEFT_UP")
+    action.rotate_body(Direction.LEFT_UP)
+    print("Rotating body: LEFT_UP")
+    action.init_head()
+    # action.rotate_body(Direction.LEFT_UP)
+    # print("Rotating body: LEFT_UP")
+    # action.rotate_head(Direction.RIGHT_DOWN)
+    # print("Rotating head: RIGHT_DOWN")
+    # action.rotate_body(Direction.RIGHT_DOWN)
+    # print("Rotating body: RIGHT_DOWN")
     rospy.spin()
