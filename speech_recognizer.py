@@ -23,10 +23,7 @@ def whisper_make_transcription(filename: str) -> str:
     except Exception as e:
         raise e
     
-def whisper(file_dir: str):
-    action = Action()
-    vision = Vision()
-    action.start()
+def whisper(file_dir: str, action: Action):
     flag = 0
     while True:
         for filename in os.listdir(file_dir):
