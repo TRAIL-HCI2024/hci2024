@@ -236,3 +236,6 @@ urdfdom-py==0.4.6
 urllib3==2.2.2
 xacro==1.14.18
 zipp==3.19.2
+openai==1.1.1
+google-generativeai
+pydub==0.25.1
