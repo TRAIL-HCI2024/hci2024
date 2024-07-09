@@ -60,6 +60,8 @@ class Vision:
             rospy.logerr(cv_bridge_exception)
 
     def search_direction_at(self, timestamp: str) -> Direction:
+        if len(timestamp.split("-")) > 1:
+            timestamp = timestamp.split("-")[0]
         copyof_directs = deepcopy(self.directs)  # 別スレッドからアクセスされるのでコピーしておく
         return self._search_direction_at(timestamp, copyof_directs)
 
