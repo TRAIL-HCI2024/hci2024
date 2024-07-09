@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 # Replace with the actual path to catkin_ws/src
-import sys
-sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
-# Replace with the actual path to catkin_ws/src
-sys.path.append('/root/HSR/catkin_ws/src/robocup_utils/scripts/')
 import math
 from enum import Enum
 from Detic import GPSRDetection as gpsr_detection
@@ -22,6 +18,10 @@ from hsrb_interface import Robot, settings
 import robocup_utils.robot
 import rospy
 import predefined_utils
+import sys
+sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
+# Replace with the actual path to catkin_ws/src
+sys.path.append('/root/HSR/catkin_ws/src/robocup_utils/scripts/')
 
 
 class Direction(Enum):
@@ -30,7 +30,6 @@ class Direction(Enum):
     RIGHT_UP = 2
     RIGHT_DOWN = 3
     NONE = -1
-
 
 
 # self.gpsr_detection = gpsr_detection
@@ -82,6 +81,8 @@ class Action:
         # rosparam
         rospy.set_param('/scaling', True)
         rospy.loginfo("EGPSR Task Manager Initialized")
+
+        self.init_pose = None
 
     def start(self):
         # self.monitor_instruction("battery") # str -> bool
@@ -169,6 +170,7 @@ class Action:
         )
         self.gpsr_functions.pick(object_name, location_name=None)
 
+    """
     def bring(self, x: float, y: float):
         theta = math.atan2(y, x)
         # rad2deg = 180 / math.pi
@@ -182,7 +184,27 @@ class Action:
                 break
         self.speak("はい、どうぞ！")
         self.robot.open_gripper()
-        
+    """
+
+    def bring(self):
+        self.return_to_initial_position()
+        while True:
+            self.speak("僕の手を触ってね")
+            is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)
+            if is_pushed:
+                break
+        self.speak("はい、どうぞ！")
+        self.robot.open_gripper()
+
+    def register_initial_position(self):
+        self.init_pose = self.robot.omni_base.pose
+
+    def return_to_initial_position(self):
+        if self.init_pose is None:
+            return
+        self.robot.omni_base.go_abs(
+            self.init_pose[0], self.init_pose[1], self.init_pose[2])
+
 
 if __name__ == '__main__':
     action = Action()
