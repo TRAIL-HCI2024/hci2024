@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
 # Replace with the actual path to catkin_ws/src
-import math
-from enum import Enum
-from Detic import GPSRDetection as gpsr_detection
-import subprocess
-from world_modules import GPSRModules
-from world_functions import GPSRFunctions
-from std_srvs.srv import Trigger
-from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
-from gpsr_utils.control.mobile_base_wrapper import MobileBaseWrapper
-from gpsr_utils.control.joint_group_wrapper import JointGroupWrapper
-from gpsr_utils.control.end_effector_wrapper import GripperWrapper
-from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
-from std_msgs.msg import Empty, String
-from sensor_msgs.msg import Image
-from hsrb_interface import Robot, settings
-import robocup_utils.robot
-import rospy
-import predefined_utils
 import sys
 sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
 # Replace with the actual path to catkin_ws/src
