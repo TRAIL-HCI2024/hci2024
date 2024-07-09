@@ -54,6 +54,21 @@ class MyMediaPipe:
 
         return pos1, pos2
 
+    def get_nose_pos(self, image: MatLike) -> Union[Position, None]:
+        results = self.detect(image)
+        if results.pose_landmarks is None:
+            return None
+
+        if len(results.pose_landmarks) == 0:
+            return None
+
+        nose = results.pose_landmarks[0][int(Bone.NOSE.value)]
+        nose_x = nose.x * image.shape[1]
+        nose_y = nose.y * image.shape[0]
+        nose_z = nose.z
+
+        return Position(nose_x, nose_y, nose_z)
+
     def get_mask(self, image: MatLike) -> Union[np.ndarray, None]:
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
         results = self.detector.detect(mp_image)

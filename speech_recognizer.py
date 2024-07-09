@@ -55,7 +55,17 @@ def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: List[
                     action.speak(response["response"])
                     action.look(direction)
                     action.find_and_pick(response["object"])
-                    action.bring()
+                    action.rotate_body_inverse(direction, wait=True)
+                    while True:
+                        distance, angle = vision.get_person_rel_pos()
+                        if distance != 0 and angle != 0:
+                            action.speak("今持っていくね！")
+                            action.bring(max(distance - 0.5, 0), angle)
+                            break
+                        else:
+                            action.speak("今どこにいる？")
+                            time.sleep(3)
+
                     flag = 1
         file_path_list.clear()
         if flag:

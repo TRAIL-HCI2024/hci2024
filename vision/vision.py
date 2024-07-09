@@ -7,7 +7,7 @@ import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
-from .my_typing import Direction, Position
+from .my_typing import Direction, Position, Bone
 from .mymediapipe import MyMediaPipe
 
 import numpy as np
@@ -134,3 +134,29 @@ class Vision:
         depth_np = depth_np * mask
         depth_np = depth_np[depth_np != 0]
         return float(np.mean(depth_np) / 1000)  # mm -> m
+
+    def pixel_to_angle(
+        self,
+        x: int,
+        width: int = 640,
+        fov: float = 58.0
+    ) -> float:
+        """
+        return in degree
+        """
+        if fov <= 0:
+            return 0
+        w = width // 2
+        d = w / np.tan(np.radians(fov / 2))
+        x = x - w
+        return np.degrees(np.arctan(x / d))
+
+    def get_person_rel_pos(self) -> Tuple[float, float]:
+        distance = self.estimate_distance()
+        if distance < 0:
+            return (0, 0)
+        nose_pose = self.mmp.get_nose_pos(self.get_image())
+        if nose_pose is None:
+            return (0, 0)
+        angle = self.pixel_to_angle(nose_pose.x)
+        return (distance, angle)
