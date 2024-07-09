@@ -3,6 +3,7 @@ import os
 import wave
 import rospy
 from audio_common_msgs.msg import AudioData
+from typing import List
 
 # 音声設定
 CHANNELS = 1
@@ -15,7 +16,7 @@ def callback(msg, queue):
 # HSRで動くように書き換える
 
 
-def record_audio(file_path_list: list[str]):
+def record_audio(file_path_list: List[str]):
     print("recording...")
     # rospy.init_node('listener', anonymous=True)
     while True:

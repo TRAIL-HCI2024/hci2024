@@ -5,6 +5,7 @@ import time
 from speech_interpreter import generate_response
 from vision.my_typing import Direction
 from vision.vision import Vision
+from typing import List
 
 
 WHISPER_MODEL_NAME = "small"
@@ -28,7 +29,7 @@ def whisper_make_transcription(filename: str) -> str:
         raise e
 
 
-def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: list[str]):
+def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: List[str]):
     flag = 0
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
