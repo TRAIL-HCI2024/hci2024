@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
 # Replace with the actual path to catkin_ws/src
+import math
+from enum import Enum
+from Detic import GPSRDetection as gpsr_detection
+import subprocess
+from world_modules import GPSRModules
+from world_functions import GPSRFunctions
+from std_srvs.srv import Trigger
+from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
+from gpsr_utils.control.mobile_base_wrapper import MobileBaseWrapper
+from gpsr_utils.control.joint_group_wrapper import JointGroupWrapper
+from gpsr_utils.control.end_effector_wrapper import GripperWrapper
+from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
+from std_msgs.msg import Empty, String
+from sensor_msgs.msg import Image
+from hsrb_interface import Robot, settings
+import robocup_utils.robot
+import rospy
+import predefined_utils
 import sys
 sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
 # Replace with the actual path to catkin_ws/src
@@ -21,7 +39,7 @@ from world_modules import GPSRModules
 import subprocess
 from Detic import GPSRDetection as gpsr_detection
 from enum import Enum
-from vision.typing import Direction
+from vision.my_typing import Direction
 
 
 # self.gpsr_detection = gpsr_detection
@@ -74,12 +92,14 @@ class Action:
         rospy.set_param('/scaling', True)
         rospy.loginfo("EGPSR Task Manager Initialized")
 
+        self.init_pose = None
+
     def start(self):
         # self.monitor_instruction("battery") # str -> bool
         self.robot.whole_body.move_to_neutral()
 
-        #self.robot.speak("おはようございます。", wait=True)
-        #self.robot.speak("HCI2024", wait=True)
+        # self.robot.speak("おはようございます。", wait=True)
+        # self.robot.speak("HCI2024", wait=True)
 
         # spottingした場所への移動 (optional)
         # location_name = "instruction point"
@@ -116,24 +136,37 @@ class Action:
         else:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
                 {"head_tilt_joint": -0.5, "head_pan_joint": 1.5})
-    
+
     def init_head(self):
         self.gpsr_functions.gpsr_modules.move_joints_with_exception(
             {"head_tilt_joint": 0.0, "head_pan_joint": 0.0})
 
-    def rotate_body(self, direction: Direction):
+    def rotate_body(self, direction: Direction, wait=False):
         try:
             if direction == Direction.LEFT_DOWN:
-                self.robot.rotate_omni_base(-90, wait=False)
+                self.robot.rotate_omni_base(-90, wait=wait)
             elif direction == Direction.LEFT_UP:
-                self.robot.rotate_omni_base(-90, wait=False)
+                self.robot.rotate_omni_base(-90, wait=wait)
             elif direction == Direction.RIGHT_UP:
-                self.robot.rotate_omni_base(90, wait=False)
+                self.robot.rotate_omni_base(90, wait=wait)
             else:
-                self.robot.rotate_omni_base(90, wait=False)
+                self.robot.rotate_omni_base(90, wait=wait)
         except Exception as e:
             print(e)
-    
+
+    def rotate_body_inverse(self, direction: Direction, wait=False):
+        try:
+            if direction == Direction.LEFT_DOWN:
+                self.robot.rotate_omni_base(90, wait=wait)
+            elif direction == Direction.LEFT_UP:
+                self.robot.rotate_omni_base(90, wait=wait)
+            elif direction == Direction.RIGHT_UP:
+                self.robot.rotate_omni_base(-90, wait=wait)
+            else:
+                self.robot.rotate_omni_base(-90, wait=wait)
+        except Exception as e:
+            print(e)
+
     def look(self, direction: Direction):
         action.rotate_head(direction)
         action.rotate_body(direction)
@@ -146,6 +179,42 @@ class Action:
             complement=None
         )
         self.gpsr_functions.pick(object_name, location_name=None)
+
+    """
+    def bring(self, x: float, y: float):
+        theta = math.atan2(y, x)
+        # rad2deg = 180 / math.pi
+        theta = math.degrees(theta)
+        self.robot.go_rel(x=x, y=y, theta=theta)
+        # self.robot.omni_base.go_rel(x=x, y=y, theta=theta)
+        while True:
+            self.speak("僕の手を触ってね")
+            is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)
+            if is_pushed:
+                break
+        self.speak("はい、どうぞ！")
+        self.robot.open_gripper()
+    """
+
+    def bring(self):
+        self.return_to_initial_position()
+        self.robot.omni_base.go_rel(x=0.5, y=0.0, theta=0.0)  # 0.5m forward
+        while True:
+            self.speak("僕の手を触ってね")
+            is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)
+            if is_pushed:
+                break
+        self.speak("はい、どうぞ！")
+        self.robot.open_gripper()
+
+    def register_initial_position(self):
+        self.init_pose = self.robot.omni_base.pose
+
+    def return_to_initial_position(self):
+        if self.init_pose is None:
+            return
+        self.robot.omni_base.go_abs(
+            self.init_pose[0], self.init_pose[1], self.init_pose[2])
 
 
 if __name__ == '__main__':

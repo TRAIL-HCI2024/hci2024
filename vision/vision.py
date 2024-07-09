@@ -1,10 +1,10 @@
 import datetime
 import threading
+import time
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Tuple, Union
-from .typing import Direction, Position
 
 import cv2
 import rospy
@@ -12,21 +12,27 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
 from .mymediapipe import MyMediaPipe
+from .my_typing import Direction, Position
 from .yolo import YOLO
 
 
 class Vision:
     def __init__(self):
         rospy.init_node('my_vision')
-        topic_name = '/hsrb/head_rgbd_sensor/rgb/image_rect_color'
+        topic_name1 = '/hsrb/head_rgbd_sensor/rgb/image_rect_color'
+        topic_name2 = '/hsrb/head_rgbd_sensor/depth_registered/image_rect_raw'
         self._bridge = CvBridge()
         self._input_image = None
 
         # Subscribe color image data from HSR
         self._image_sub = rospy.Subscriber(
-            topic_name, Image, self._color_image_cb)
+            topic_name1, Image, self._color_image_cb)
         # Wait until connection
-        rospy.wait_for_message(topic_name, Image, timeout=5.0)
+        rospy.wait_for_message(topic_name1, Image, timeout=5.0)
+
+        self._depth_sub = rospy.Subscriber(
+            topic_name2, Image, self._depth_image_cb)
+        rospy.wait_for_message(topic_name2, Image, timeout=5.0)
 
         self.yolo = YOLO()
         self.mmp = MyMediaPipe()
@@ -50,6 +56,12 @@ class Vision:
     def _color_image_cb(self, data):
         try:
             self._input_image = self._bridge.imgmsg_to_cv2(data, "bgr8")
+        except CvBridgeError as cv_bridge_exception:
+            rospy.logerr(cv_bridge_exception)
+
+    def _depth_image_cb(self, data):
+        try:
+            self._depth_image = self._bridge.imgmsg_to_cv2(data, "passthrough")
         except CvBridgeError as cv_bridge_exception:
             rospy.logerr(cv_bridge_exception)
 
@@ -81,12 +93,15 @@ class Vision:
     def get_image(self):
         return self._input_image
 
+    def get_depth(self):
+        return self._depth_image
+
     def is_person_detected(self) -> bool:
         image = self.get_image()
         boxes = self.yolo._detect(image)
         boxes = boxes[boxes['name'] == "person"]
-        if len(boxes) > 0:
-            print("Person detected")
+        # if len(boxes) > 0:
+        # print("Person detected")
         return len(boxes) > 0
 
     def _estimate_pose(self) -> Union[Tuple[Position, Position], None]:
@@ -115,3 +130,17 @@ class Vision:
             return Direction.RIGHT_DOWN
         else:
             return Direction.NONE
+
+    def estimate_distance(self) -> float:
+        image = self.get_image()
+        depth = self.get_depth()
+
+        mask = self.mmp.get_mask(image)
+
+        if mask is None:
+            print("Cannot estimate distance")
+            return -1
+
+        depth_map = depth * mask
+        depth_map = depth_map[depth_map != 0]
+        return depth_map.mean() / 1000  # mm -> m
