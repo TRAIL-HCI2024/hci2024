@@ -188,6 +188,7 @@ class Action:
 
     def bring(self):
         self.return_to_initial_position()
+        self.robot.omni_base.go_rel(x=0.5, y=0.0, theta=0.0)  # 0.5m forward
         while True:
             self.speak("僕の手を触ってね")
             is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)
