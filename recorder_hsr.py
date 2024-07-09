@@ -8,13 +8,16 @@ from audio_common_msgs.msg import AudioData
 CHANNELS = 1
 RATE = 16000
 
+
 def callback(msg, queue):
     queue.append(msg.data)
 
-###HSRで動くように書き換える
+# HSRで動くように書き換える
+
+
 def record_audio():
     print("recording...")
-    #rospy.init_node('listener', anonymous=True)
+    # rospy.init_node('listener', anonymous=True)
     while True:
         start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -29,7 +32,7 @@ def record_audio():
 
         # ファイル名を現在の日時に基づいて設定
         end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
-        filename = "data/audio/" + start_time + "-" + end_time + ".wav"
+        filename = "data/audio/" + start_time + "-" + end_time + ".wav_temp"
 
         # 音声データを保存
         with wave.open(filename, 'wb') as wf:
@@ -38,6 +41,10 @@ def record_audio():
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
             wf.close()
+
+        # ファイル名を変更
+        os.rename(filename, filename.replace("_temp", ""))
+
 
 if __name__ == "__main__":
     record_audio()
