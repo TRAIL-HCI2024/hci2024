@@ -15,7 +15,7 @@ def callback(msg, queue):
 # HSRで動くように書き換える
 
 
-def record_audio():
+def record_audio(file_path_list: list[str]):
     print("recording...")
     # rospy.init_node('listener', anonymous=True)
     while True:
@@ -47,6 +47,7 @@ def record_audio():
         # ファイル名を変更
         os.rename(filename, filename.replace("_temp", ""))
         new_name = filename.replace("_temp", "")
+        file_path_list.append(new_name)
         # ファイルサイズを表示
         print(f"file size: {os.path.getsize(new_name)}")
 

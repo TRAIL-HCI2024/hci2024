@@ -1,6 +1,6 @@
 import os
 from action.action import Action
-import openai 
+import openai
 import time
 from speech_interpreter import generate_response
 from vision.my_typing import Direction
@@ -21,12 +21,14 @@ def whisper_make_transcription(filename: str) -> str:
             # fileサイズを取得
             file_size = os.path.getsize(filename)
             print(f"file size from whisper: {file_size}")
-            transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="ja")
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1", file=audio_file, language="ja")
         return transcript.text
     except Exception as e:
         raise e
-    
-def whisper(file_dir: str, action: Action, vision: Vision):
+
+
+def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: list[str]):
     flag = 0
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
@@ -38,16 +40,16 @@ def whisper(file_dir: str, action: Action, vision: Vision):
     time.sleep(6)
 
     while True:
-        for filename in os.listdir(file_dir):
-            if filename.endswith(".wav"):
-                file_path = os.path.join(file_dir, filename)
+        for file_path in file_path_list:
+            if file_path.endswith(".wav"):
                 print(file_path)
                 transcription = whisper_make_transcription(file_path)
-                
+
                 response = generate_response(transcription)
                 if response["isOrder"]:
                     timestamp, _ = os.path.splitext(filename)
-                    direction: Direction = vision.search_direction_at(timestamp)
+                    direction: Direction = vision.search_direction_at(
+                        timestamp)
 
                     action.speak(response["response"])
                     action.look(direction)
@@ -55,13 +57,14 @@ def whisper(file_dir: str, action: Action, vision: Vision):
                     action.bring()
                     flag = 1
                     break
-                    
+
                 os.remove(file_path)
         if flag:
             break
         time.sleep(1)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     with open("こんにちは.wav", "rb") as audio_file:
         audio_data = audio_file.read()
         print(whisper_make_transcription(audio_data))

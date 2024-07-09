@@ -12,11 +12,13 @@ def main():
     act = action.Action()
     act.start()
 
+    file_path_list = []
     file_dir = "data/audio"
-    vad_thread = threading.Thread(target=whisper, args=(file_dir, act, vis))
+    vad_thread = threading.Thread(
+        target=whisper, args=(file_dir, act, vis, file_path_list))
     vad_thread.start()
 
-    record_audio_hsr()
+    record_audio_hsr(file_path_list)
     vad_thread.join()
 
 
