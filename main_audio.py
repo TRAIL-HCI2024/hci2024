@@ -12,6 +12,8 @@ def main():
     act = action.Action()
     act.start()
 
+    act.speak("こんにちは！")
+
     file_path_list = []
     file_dir = "data/audio"
     vad_thread = threading.Thread(
