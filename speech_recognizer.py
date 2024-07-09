@@ -18,6 +18,9 @@ def whisper_make_transcription(filename: str) -> str:
 
     try:
         with open(filename, "rb") as audio_file:
+            # fileサイズを取得
+            file_size = os.path.getsize(filename)
+            print(f"file size from whisper: {file_size}")
             transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="ja")
         return transcript.text
     except Exception as e:
