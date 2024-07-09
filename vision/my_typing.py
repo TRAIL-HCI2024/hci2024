@@ -21,3 +21,5 @@ class Bone(Enum):
     RIGHT_SHOULDER = 12
     RIGHT_ELBOW = 14
     RIGHT_WRIST = 16
+    LEFT_EYE = 2
+    RIGHT_EYE = 5
