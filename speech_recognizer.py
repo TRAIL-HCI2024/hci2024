@@ -57,9 +57,7 @@ def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: List[
                     action.find_and_pick(response["object"])
                     action.bring()
                     flag = 1
-                    break
-
-                os.remove(file_path)
+        file_path_list.clear()
         if flag:
             break
         time.sleep(1)
