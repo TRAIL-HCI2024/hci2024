@@ -10,6 +10,8 @@ from sensor_msgs.msg import Image
 from .my_typing import Direction, Position
 from .mymediapipe import MyMediaPipe
 
+import numpy as np
+
 
 class Vision:
     def __init__(self):
@@ -120,6 +122,7 @@ class Vision:
     def estimate_distance(self) -> float:
         image = self.get_image()
         depth = self.get_depth()
+        depth_np = np.array(depth, dtype=np.uint16)
 
         mask = self.mmp.get_mask(image)
 
@@ -127,6 +130,7 @@ class Vision:
             print("Cannot estimate distance")
             return -1
 
-        depth_map = depth * mask
-        depth_map = depth_map[depth_map != 0]
-        return depth_map.mean() / 1000  # mm -> m
+        mask = mask.astype(np.uint16)
+        depth_np = depth_np * mask
+        depth_np = depth_np[depth_np != 0]
+        return float(np.mean(depth_np) / 1000)  # mm -> m
