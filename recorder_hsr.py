@@ -20,9 +20,10 @@ def record_audio(file_path_list: List[str]):
     print("recording...")
     # rospy.init_node('listener', anonymous=True)
     while True:
-        start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
+        # floatに変更
+        start_time = datetime.datetime.now().timestamp()
 
-        frames = []
+        frames: List[bytes] = []
         rospy.Subscriber("audio/audio", AudioData, callback, frames)
         print("start record")
         rospy.sleep(5)
@@ -34,7 +35,7 @@ def record_audio(file_path_list: List[str]):
         print(f"frames len: {len(frames)}")
 
         # ファイル名を現在の日時に基づいて設定
-        filename = "data/audio/" + start_time + ".wav_temp"
+        filename = f"data/audio/{str(start_time)}.wav_temp"
 
         # 音声データを保存
         with wave.open(filename, 'wb') as wf:

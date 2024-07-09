@@ -41,7 +41,7 @@ class Vision:
     def _main(self):
         while not rospy.is_shutdown():
             direct = self.extimate_pose()
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
+            timestamp = datetime.datetime.now().timestamp()
             if len(self.directs) >= self.lim_directs:
                 self.directs.pop(0)
             self.directs.append((direct, timestamp))
@@ -63,12 +63,12 @@ class Vision:
         if len(timestamp.split("-")) > 1:
             timestamp = timestamp.split("-")[0]
         copyof_directs = deepcopy(self.directs)  # 別スレッドからアクセスされるのでコピーしておく
-        return self._search_direction_at(timestamp, copyof_directs)
+        return self._search_direction_at(float(timestamp), copyof_directs)
 
     def _search_direction_at(
         self,
-        timestamp: str,
-        ls: List[Tuple[Direction, str]]
+        timestamp: float,
+        ls: List[Tuple[Direction, float]]
     ) -> Direction:
         if len(ls) == 1:
             return ls[0][0]
@@ -78,11 +78,11 @@ class Vision:
 
         if len(ls) >= 2:
             median = len(ls) // 2
-            dt1 = datetime.datetime.strptime(ls[median][1], "%Y%m%d_%H%M%S")
-            dt2 = datetime.datetime.strptime(timestamp, "%Y%m%d_%H%M%S")
-            if dt1 < dt2:
+            if ls[median][1] >= timestamp:  # medianがtimestampよりも未来の場合
+                # 前半を探索
                 return self._search_direction_at(timestamp, ls[:median])
             else:
+                # 後半を探索
                 return self._search_direction_at(timestamp, ls[median:])
         return Direction.NONE
 

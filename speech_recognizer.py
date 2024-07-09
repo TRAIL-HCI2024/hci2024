@@ -48,9 +48,9 @@ def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: List[
 
                 response = generate_response(transcription)
                 if response["isOrder"]:
+                    filename = os.path.basename(file_path)
                     timestamp, _ = os.path.splitext(filename)
-                    direction: Direction = vision.search_direction_at(
-                        timestamp)
+                    direction = vision.search_direction_at(timestamp)
 
                     action.speak(response["response"])
                     action.look(direction)
