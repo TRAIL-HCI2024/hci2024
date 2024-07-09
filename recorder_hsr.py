@@ -44,11 +44,11 @@ def record_audio():
             wf.writeframes(b''.join(frames))
             wf.close()
 
-        # ファイルサイズを表示
-        print(f"file size: {os.path.getsize(filename)}")
-
         # ファイル名を変更
         os.rename(filename, filename.replace("_temp", ""))
+        new_name = filename.replace("_temp", "")
+        # ファイルサイズを表示
+        print(f"file size: {os.path.getsize(new_name)}")
 
 
 if __name__ == "__main__":
