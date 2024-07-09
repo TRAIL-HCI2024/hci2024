@@ -34,8 +34,7 @@ def record_audio(file_path_list: List[str]):
         print(f"frames len: {len(frames)}")
 
         # ファイル名を現在の日時に基づいて設定
-        end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
-        filename = "data/audio/" + start_time + "-" + end_time + ".wav_temp"
+        filename = "data/audio/" + start_time + ".wav_temp"
 
         # 音声データを保存
         with wave.open(filename, 'wb') as wf:
