@@ -1,19 +1,14 @@
 import datetime
 import threading
-import time
 from copy import deepcopy
-from dataclasses import dataclass
-from enum import Enum
 from typing import List, Tuple, Union
 
-import cv2
 import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
-from .mymediapipe import MyMediaPipe
 from .my_typing import Direction, Position
-from .yolo import YOLO
+from .mymediapipe import MyMediaPipe
 
 
 class Vision:
@@ -34,7 +29,6 @@ class Vision:
             topic_name2, Image, self._depth_image_cb)
         rospy.wait_for_message(topic_name2, Image, timeout=5.0)
 
-        self.yolo = YOLO()
         self.mmp = MyMediaPipe()
 
         self.directs = []
@@ -96,14 +90,6 @@ class Vision:
     def get_depth(self):
         return self._depth_image
 
-    def is_person_detected(self) -> bool:
-        image = self.get_image()
-        boxes = self.yolo._detect(image)
-        boxes = boxes[boxes['name'] == "person"]
-        # if len(boxes) > 0:
-        # print("Person detected")
-        return len(boxes) > 0
-
     def _estimate_pose(self) -> Union[Tuple[Position, Position], None]:
         return self.mmp.estimate_right_arm(self.get_image())
 
@@ -112,8 +98,6 @@ class Vision:
         目的地の方向 (left, right): str
         喋るメッセージ: str
         """
-        if not self.is_person_detected():
-            return Direction.NONE
 
         _pose = self._estimate_pose()
         if _pose is None:
