@@ -30,6 +30,8 @@ def record_audio():
         if not os.path.exists("data/audio"):
             os.makedirs("data/audio")
 
+        print(f"frames len: {len(frames)}")
+
         # ファイル名を現在の日時に基づいて設定
         end_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
         filename = "data/audio/" + start_time + "-" + end_time + ".wav_temp"
@@ -41,6 +43,9 @@ def record_audio():
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
             wf.close()
+
+        # ファイルサイズを表示
+        print(f"file size: {os.path.getsize(filename)}")
 
         # ファイル名を変更
         os.rename(filename, filename.replace("_temp", ""))
