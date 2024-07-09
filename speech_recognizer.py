@@ -26,8 +26,9 @@ def whisper_make_transcription(filename: str) -> str:
 def whisper(file_dir: str, action: Action, vision: Vision):
     flag = 0
     if not os.path.exists(file_dir):
-            os.makedirs(file_dir)
+        os.makedirs(file_dir)
     action.register_initial_position()
+    time.sleep(6)
 
     while True:
         for filename in os.listdir(file_dir):
