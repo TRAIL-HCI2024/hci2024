@@ -78,8 +78,8 @@ class Vision:
 
         if len(ls) >= 2:
             median = len(ls) // 2
-            dt1 = datetime.datetime.strptime(ls[median][1], "%Y%m%d_%H%M%S.%f")
-            dt2 = datetime.datetime.strptime(timestamp, "%Y%m%d_%H%M%S.%f")
+            dt1 = datetime.datetime.strptime(ls[median][1], "%Y%m%d_%H%M%S")
+            dt2 = datetime.datetime.strptime(timestamp, "%Y%m%d_%H%M%S")
             if dt1 < dt2:
                 return self._search_direction_at(timestamp, ls[:median])
             else:
