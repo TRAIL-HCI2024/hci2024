@@ -1,11 +1,13 @@
 import cv2
 from cv2.typing import MatLike
 from typing import Tuple, Union
-from .typing import Position, Bone
+from .my_typing import Position, Bone
 
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+
+import numpy as np
 
 
 class MyMediaPipe:
@@ -51,6 +53,15 @@ class MyMediaPipe:
         pos2 = Position(right_wrist_x, right_wrist_y, right_wrist_z)
 
         return pos1, pos2
+
+    def get_mask(self, image: MatLike) -> Union[np.ndarray, None]:
+        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
+        results = self.detector.detect(mp_image)
+        if results.segmentation_masks is None:
+            return None
+        nv = results.segmentation_masks[0].numpy_view()
+        nv = np.where(nv == 0, 0, 1).astype(np.uint8)
+        return nv
 
 
 if __name__ == '__main__':
