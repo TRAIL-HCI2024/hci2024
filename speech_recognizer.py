@@ -27,6 +27,10 @@ def whisper(file_dir: str, action: Action, vision: Vision):
     flag = 0
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
+    # clear folder
+    for filename in os.listdir(file_dir):
+        file_path = os.path.join(file_dir, filename)
+        os.remove(file_path)
     action.register_initial_position()
     time.sleep(6)
 
