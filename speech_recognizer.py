@@ -3,8 +3,8 @@ from action.action import Action
 import openai 
 import time
 from speech_interpreter import generate_response
+from vision.my_typing import Direction
 from vision.vision import Vision
-from vision.typing import Direction
 
 
 WHISPER_MODEL_NAME = "small"
@@ -23,10 +23,12 @@ def whisper_make_transcription(filename: str) -> str:
     except Exception as e:
         raise e
     
-def whisper(file_dir: str, action: Action):
+def whisper(file_dir: str, action: Action, vision: Vision):
     flag = 0
     if not os.path.exists(file_dir):
             os.makedirs(file_dir)
+    action.register_initial_position()
+
     while True:
         for filename in os.listdir(file_dir):
             if filename.endswith(".wav"):
@@ -42,6 +44,7 @@ def whisper(file_dir: str, action: Action):
                     action.speak(response["response"])
                     action.look(direction)
                     action.find_and_pick(response["object"])
+                    action.bring()
                     flag = 1
                     break
                     

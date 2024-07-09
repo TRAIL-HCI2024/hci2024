@@ -13,7 +13,7 @@ def main():
     act.start()
 
     file_dir = "data/audio"
-    vad_thread = threading.Thread(target=whisper, args=(file_dir,action))
+    vad_thread = threading.Thread(target=whisper, args=(file_dir,act, vis))
     vad_thread.start()
    
 
