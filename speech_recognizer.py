@@ -1,8 +1,11 @@
 import os
-
+from action.action import Action
 import openai 
 import time
 from speech_interpreter import generate_response
+from vision.my_typing import Direction
+from vision.vision import Vision
+
 
 WHISPER_MODEL_NAME = "small"
 WHISPER_DEVICE = "cpu"
@@ -20,16 +23,34 @@ def whisper_make_transcription(filename: str) -> str:
     except Exception as e:
         raise e
     
-def whisper(file_dir):
+def whisper(file_dir: str, action: Action, vision: Vision):
+    flag = 0
+    if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
+    action.register_initial_position()
+
     while True:
         for filename in os.listdir(file_dir):
             if filename.endswith(".wav"):
                 file_path = os.path.join(file_dir, filename)
                 print(file_path)
                 transcription = whisper_make_transcription(file_path)
-                print(generate_response(transcription))
+                
+                response = generate_response(transcription)
+                if response["isOrder"]:
+                    timestamp, _ = os.path.splitext(filename)
+                    direction: Direction = vision.search_direction_at(timestamp)
 
+                    action.speak(response["response"])
+                    action.look(direction)
+                    action.find_and_pick(response["object"])
+                    action.bring()
+                    flag = 1
+                    break
+                    
                 os.remove(file_path)
+        if flag:
+            break
         time.sleep(1)
 
 if __name__=="__main__":
