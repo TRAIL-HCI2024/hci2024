@@ -20,7 +20,7 @@ def record_audio(file_path_list: List[str]):
     print("recording...")
     # rospy.init_node('listener', anonymous=True)
     while True:
-        start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        start_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S.%f")
 
         frames = []
         rospy.Subscriber("audio/audio", AudioData, callback, frames)
