@@ -22,7 +22,8 @@ import subprocess
 from Detic import GPSRDetection as gpsr_detection
 from enum import Enum
 from vision.my_typing import Direction
-
+from dataclasses import dataclass
+import math
 
 # self.gpsr_detection = gpsr_detection
 
@@ -108,16 +109,16 @@ class Action:
     def rotate_head(self, direction: Direction):
         if direction == Direction.LEFT_DOWN:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
-                {"head_tilt_joint": -0.5, "head_pan_joint": -1.5})
+                {"head_tilt_joint": -0.5, "head_pan_joint": 1.5})
         elif direction == Direction.LEFT_UP:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
-                {"head_tilt_joint": 0.5, "head_pan_joint": -1.5})
+                {"head_tilt_joint": 0.5, "head_pan_joint": 1.5})
         elif direction == Direction.RIGHT_UP:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
-                {"head_tilt_joint": 0.5, "head_pan_joint": 1.5})
+                {"head_tilt_joint": 0.5, "head_pan_joint": -1.5})
         else:
             self.gpsr_functions.gpsr_modules.move_joints_with_exception(
-                {"head_tilt_joint": -0.5, "head_pan_joint": 1.5})
+                {"head_tilt_joint": -0.5, "head_pan_joint": -1.5})
 
     def init_head(self):
         self.gpsr_functions.gpsr_modules.move_joints_with_exception(
@@ -126,33 +127,33 @@ class Action:
     def rotate_body(self, direction: Direction, wait=False):
         try:
             if direction == Direction.LEFT_DOWN:
-                self.robot.rotate_omni_base(-90, wait=wait)
+                self.robot.rotate_omni_base(90, wait=wait)
             elif direction == Direction.LEFT_UP:
-                self.robot.rotate_omni_base(-90, wait=wait)
+                self.robot.rotate_omni_base(90, wait=wait)
             elif direction == Direction.RIGHT_UP:
-                self.robot.rotate_omni_base(90, wait=wait)
+                self.robot.rotate_omni_base(-90, wait=wait)
             else:
-                self.robot.rotate_omni_base(90, wait=wait)
+                self.robot.rotate_omni_base(-90, wait=wait)
         except Exception as e:
             print(e)
 
     def rotate_body_inverse(self, direction: Direction, wait=False):
         try:
             if direction == Direction.LEFT_DOWN:
-                self.robot.rotate_omni_base(90, wait=wait)
+                self.robot.rotate_omni_base(-90, wait=wait)
             elif direction == Direction.LEFT_UP:
-                self.robot.rotate_omni_base(90, wait=wait)
+                self.robot.rotate_omni_base(-90, wait=wait)
             elif direction == Direction.RIGHT_UP:
-                self.robot.rotate_omni_base(-90, wait=wait)
+                self.robot.rotate_omni_base(90, wait=wait)
             else:
-                self.robot.rotate_omni_base(-90, wait=wait)
+                self.robot.rotate_omni_base(90, wait=wait)
         except Exception as e:
             print(e)
 
     def look(self, direction: Direction):
-        action.rotate_head(direction)
-        action.rotate_body(direction)
-        action.init_head()
+        self.rotate_head(direction)
+        self.rotate_body(direction)
+        self.init_head()
 
     def find_and_pick(self, object_name: str):
         self.gpsr_functions.find_concrete_name_objects(
@@ -179,7 +180,11 @@ class Action:
     """
 
     def bring(self, distance: float, angle: float):
-        self.robot.omni_base.go_rel(x=distance, y=0, theta=angle)
+        dx = math.sin(math.radians(angle))
+        dy = math.cos(math.radians(angle))
+        #self.gpsr_functions.gpsr_modules.go_to_abs_with_exception(x=dx+self.init_pose[0], y=dy+self.init_pose[1], yaw=angle, move_to_go=False)
+        self.gpsr_functions.gpsr_modules.go_to_abs_with_exception(x=1.43, y=0.67, yaw=0, move_to_go=False)
+        
         while True:
             self.speak("僕の手を触ってね")
             is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)
@@ -187,6 +192,12 @@ class Action:
                 break
         self.speak("はい、どうぞ！")
         self.robot.open_gripper()
+
+    def bring2(self, distance: float, angle: float):
+        dx = math.sin(math.radians(angle))
+        dy = math.cos(math.radians(angle))
+        self.gpsr_functions.gpsr_modules.go_to_abs_with_exception(x=dx, y=dy, yaw=angle, move_to_go=False)
+
 
     def register_initial_position(self):
         self.init_pose = self.robot.omni_base.pose
@@ -197,16 +208,21 @@ class Action:
         self.robot.omni_base.go_abs(
             self.init_pose[0], self.init_pose[1], self.init_pose[2])
 
+    def return_to_origin(self):
+        self.gpsr_functions.gpsr_modules.go_to_abs_with_exception(x=0, y=0, yaw=0, move_to_go=False)
 
 if __name__ == '__main__':
     action = Action()
     action.start()
     action.speak("Hello")
-    action.rotate_head(Direction.LEFT_UP)
-    print("Rotating head: LEFT_UP")
+    #action.rotate_head(Direction.LEFT_UP)
+    #print("Rotating head: LEFT_UP")
     action.rotate_body(Direction.LEFT_UP)
     print("Rotating body: LEFT_UP")
     action.init_head()
+    action.robot.face_and_move_toward_point(MyPoint(x=1, y=0, z=0))
+    action.robot.face_and_move_toward_point(MyPoint(x=1, y=1, z=0))
+
     # action.rotate_body(Direction.LEFT_UP)
     # print("Rotating body: LEFT_UP")
     # action.rotate_head(Direction.RIGHT_DOWN)
