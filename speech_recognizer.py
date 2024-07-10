@@ -45,22 +45,27 @@ def whisper(file_dir: str, action: Action, vision: Vision, file_path_list: List[
             if file_path.endswith(".wav"):
                 print(file_path)
                 transcription = whisper_make_transcription(file_path)
-
+                print(transcription)
+                transcription = "あっちのりんごを取ってきて"
                 response = generate_response(transcription)
                 if response["isOrder"]:
                     filename = os.path.basename(file_path)
                     timestamp, _ = os.path.splitext(filename)
                     direction = vision.search_direction_at(timestamp)
-
+                    print(direction)
+                    # action.register_initial_position()
                     action.speak(response["response"])
                     action.look(direction)
                     action.find_and_pick(response["object"])
                     action.rotate_body_inverse(direction, wait=True)
+                    time.sleep(3)
                     while True:
                         distance, angle = vision.get_person_rel_pos()
+                        print(distance, angle)
                         if distance != 0 and angle != 0:
                             action.speak("今持っていくね！")
-                            action.bring(max(distance - 0.5, 0), angle)
+                            action.register_initial_position()
+                            action.bring(max(distance*0.5, 0), angle)
                             break
                         else:
                             action.speak("今どこにいる？")

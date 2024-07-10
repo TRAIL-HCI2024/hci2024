@@ -51,6 +51,7 @@ def record_audio(file_path_list: List[str]):
         file_path_list.append(new_name)
         # ファイルサイズを表示
         print(f"file size: {os.path.getsize(new_name)}")
+        break
 
 
 if __name__ == "__main__":
