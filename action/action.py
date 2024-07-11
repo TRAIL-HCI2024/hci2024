@@ -1,35 +1,27 @@
 #!/usr/bin/env python3
 # Replace with the actual path to catkin_ws/src
-import math
-from enum import Enum
-from Detic import GPSRDetection as gpsr_detection
-import subprocess
-from world_modules import GPSRModules
-from world_functions import GPSRFunctions
-from std_srvs.srv import Trigger
-from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
-from gpsr_utils.control.mobile_base_wrapper import MobileBaseWrapper
-from gpsr_utils.control.joint_group_wrapper import JointGroupWrapper
-from gpsr_utils.control.end_effector_wrapper import GripperWrapper
-from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
-from std_msgs.msg import Empty, String
-from sensor_msgs.msg import Image
-from hsrb_interface import Robot, settings
-import robocup_utils.robot
-import rospy
-import predefined_utils
 import sys
 sys.path.append('/root/HSR/catkin_ws/src/gpsr/scripts')
 # Replace with the actual path to catkin_ws/src
 sys.path.append('/root/HSR/catkin_ws/src/robocup_utils/scripts/')
-
-
-class Direction(Enum):
-    LEFT_UP = 0
-    LEFT_DOWN = 1
-    RIGHT_UP = 2
-    RIGHT_DOWN = 3
-    NONE = -1
+import predefined_utils
+import rospy
+import robocup_utils.robot
+from hsrb_interface import Robot, settings
+from sensor_msgs.msg import Image
+from std_msgs.msg import Empty, String
+from llm_manager import LLMTaskPlanner, LLMWhatToDo, LLMAnswerYourSelf
+from gpsr_utils.control.end_effector_wrapper import GripperWrapper
+from gpsr_utils.control.joint_group_wrapper import JointGroupWrapper
+from gpsr_utils.control.mobile_base_wrapper import MobileBaseWrapper
+from weblab_hsr_msgs.srv import StringTrigger, SoundPlay
+from std_srvs.srv import Trigger
+from world_functions import GPSRFunctions
+from world_modules import GPSRModules
+import subprocess
+from Detic import GPSRDetection as gpsr_detection
+from enum import Enum
+from vision.my_typing import Direction
 
 
 # self.gpsr_detection = gpsr_detection
@@ -47,7 +39,7 @@ class Action:
         Args: none
         Returns: none
         """
-        rospy.init_node('my_action', anonymous=True)
+        #rospy.init_node('my_action', anonymous=True)
 
         # Connect to Robot
         rospy.loginfo("Connecting to robot ..")
@@ -186,9 +178,8 @@ class Action:
         self.robot.open_gripper()
     """
 
-    def bring(self):
-        self.return_to_initial_position()
-        self.robot.omni_base.go_rel(x=0.5, y=0.0, theta=0.0)  # 0.5m forward
+    def bring(self, distance: float, angle: float):
+        self.robot.omni_base.go_rel(x=distance, y=0, theta=angle)
         while True:
             self.speak("僕の手を触ってね")
             is_pushed = self.gpsr_functions.gpsr_modules.call_push_checker(5.0)

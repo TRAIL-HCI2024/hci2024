@@ -23,3 +23,4 @@ class Bone(Enum):
     RIGHT_WRIST = 16
     LEFT_EYE = 2
     RIGHT_EYE = 5
+    NOSE = 0
